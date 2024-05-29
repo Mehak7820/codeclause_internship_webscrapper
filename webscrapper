@@ -1,0 +1,49 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+url = "https://timesofindia.indiatimes.com/"
+
+response = requests.get(url)
+htmlcontent = response.content
+
+soup = BeautifulSoup(htmlcontent, "html.parser")
+
+title = soup.title
+print(f"Page title: {title.string}")
+
+paragraphs = soup.find_all('p')
+if paragraphs:
+    print(f"\nFirst paragraph text: {paragraphs[0].get_text()}")
+
+lead_paragraphs = soup.find_all('p', class_="lead")
+if lead_paragraphs:
+    for para in lead_paragraphs:
+        print(f"\nParagraph with class 'lead': {para.get_text()}")
+
+unique_links = set()
+for link in soup.find_all('a'):
+    href = link.get('href')
+    if href and href != '#':
+        unique_links.add(href)
+
+print("\nUnique links on the page:")
+for link in unique_links:
+    print(link)
+
+navbar_content = soup.find(id="navbarSupportedContent")
+if navbar_content:
+    print("\nContent within element with ID 'navbarSupportedContent':")
+    for item in navbar_content.stripped_strings:
+        print(item)
+
+modal_footer = soup.find(class_="modal-footer")
+if modal_footer:
+    parent_of_footer = modal_footer.parent
+    print(f"\nParent tag of element with class 'modal-footer': {parent_of_footer.name}")
+
+if navbar_content:
+    all_parents = navbar_content.parents
+    print("\nAll parent tags of the element with ID 'navbarSupportedContent':")
+    for parent in all_parents:
+        print(parent.name)
